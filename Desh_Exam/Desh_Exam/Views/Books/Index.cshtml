@@ -1,0 +1,93 @@
+﻿@model IEnumerable<Desh_Exam.Models.Book>
+@using X.PagedList
+@using X.PagedList.Mvc
+@using X.PagedList.Mvc.Common
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="row">
+    <div class="col=12">
+        <h3 class="text-center">Books</h3>
+        <div class="d-flex justify-content-end mb-1">
+            <a href="@Url.Action("Create", "Books")" class="btn btn-primary btn-sm"><i class="bi bi-plus"></i> Create New</a>
+        </div>
+        <table class="table table-bordered table-striped table-light">
+            <thead class="">
+                
+                    <tr style="vertical-align:middle">
+                        <th>SI#</th>
+                        <th>Book Name</th>
+                        <th>Author Name</th>
+                        <th>Date</th>
+                        <th>Quantity</th>
+                        <th>Action</th>
+                    </tr>
+                
+                </thead>
+
+            <tbody>
+                @foreach (var a in Model)
+                {
+
+                    
+                    <tr style="vertical-align:middle" id="tr_@a.BookId">
+                       
+                        <td>@a.BookId</td>
+                        <td>@a.BookName</td>
+                        <td>@a.AuthorName</td>
+                        <td>@a.Date.ToString("dd-MM-yyyy")</td>
+                        <td>@a.Quantity</td>
+                        <td class="text-center">
+                            <a href="@Url.Action("Edit", "Books", new {id=a.BookId})" class="btn btn-success btn-sm"><i class="bi bi-pencil"></i></a>
+                            <button type="button" href="@Url.Action("Delete", "Books", new {id=a.BookId})" class="btn btn-danger btn-sm del" data-pk="@a.BookId"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+        </table>
+
+        <div class="d-flex justify-content-end">
+            @Html.PagedListPager((IPagedList)Model, pg => Url.Action("Index", new { pg = pg }), new PagedListRenderOptions
+            {
+                LiElementClasses = new string[] { "page-item" },
+                PageClasses = new string[] { "page-link" }
+            })
+
+        </div>
+    </div>
+</div>
+@section styles
+{
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+}
+@section scripts
+{
+    <script src="~/Scripts/jquery-3.7.1.js"></script>
+    
+    <script>
+        $(".del").click(function () {
+            var id = $(this).data("pk");
+            if (confirm("Are you sure to delete?\nBooks with all data associated will be delete")) {
+                console.log(id);
+                $.ajax({
+                    type: "post",
+                    url: `/Books/Delete/${id}`,
+                    dataType: "json",
+                    success: r => {
+                        if (r.success == true) {
+                            $(`#tr_${id}`).remove();
+                            $(`#trq_${id}`).remove();
+                        }
+                    }
+                })
+            }
+        });
+       
+    </script>
+}
+
+
+
+
